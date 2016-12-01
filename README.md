@@ -49,7 +49,9 @@ http://www.startuplessonslearned.com/2008/09/one-line-split-test-or-how-to-ab-al
 - The system will always assume that it is installed. Before it is installed, it will cause query errors, then it notices those errors and it will test whether it is installed & do the installation if needed.
 - To uninstall and delete all records, run this mySQL:
 ```mysql
-DROP TABLE leanAb_groups;DROP TABLE leanAb_assignments;DROP TABLE leanAb_experiments;
+DROP TABLE leanAb_groups;
+DROP TABLE leanAb_assignments;
+DROP TABLE leanAb_experiments;
 ```
 
 # Future Features
