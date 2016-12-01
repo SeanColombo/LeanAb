@@ -2,6 +2,8 @@
 LeanAb is a simple library for doing AB tests in one-line in the manner described by Eric Reis in this blog post:
 http://www.startuplessonslearned.com/2008/09/one-line-split-test-or-how-to-ab-all.html
 
+The framework was built to be used by [Burndown for Trello](https://www.burndownfortrello.com/) but was made general-purpose so that any site can integrate the same functionality and only needs to implement 3 simple functions to glue LeanAb into any system.
+
 # Installation
 1. Copy the LeanAb.php file to a directory that your code can access (such as the ```/includes``` directory of your site).
 2. To get this system to work well with your own site, there are a few methods at the top of the file that you need to implement to integrate with your system. Docs are provided in comments above those functions on how to implement them:
