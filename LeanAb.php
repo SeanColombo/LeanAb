@@ -3,6 +3,8 @@
  * @author: Sean Colombo
  * @date: 20161124
  *
+ * SEE https://github.com/SeanColombo/LeanAb/blob/master/README.md FOR FULL DOCUMENTATION!
+ *
  * This file is a simple framework for doing AB tests in one-line in the
  * manner described by Eric Reis in this blog post:
  * http://www.startuplessonslearned.com/2008/09/one-line-split-test-or-how-to-ab-all.html
