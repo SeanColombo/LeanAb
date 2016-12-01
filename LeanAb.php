@@ -18,15 +18,15 @@
  * USAGE:
  * - Drop this php file in the same directory as your other PHP code and include it with "include 'LeanAb.php';"
  * - To start a new test, do something like this:
- 
-    $hypothesis = setup_experiment("FancyNewDesign1.2",
-                            array(array("control", 50),
-                                  array("design1", 50)));
-	if( $hypothesis == "control" ) {
-		// do it the old way
-	} elseif( $hypothesis == "design1" ) {
-	   // do it the fancy new way
-	}
+ *
+ *	$hypothesis = setup_experiment("FancyNewDesign1.2",
+ *                           array(array("control", 50),
+ *                                 array("design1", 50)));
+ *	if( $hypothesis == "control" ) {
+ *		// do it the old way
+ *	} elseif( $hypothesis == "design1" ) {
+ *	   // do it the fancy new way
+ *	}
  *
  * REPORTS:
  * - To get a basic report for a test, call the static printReport with the name of an
