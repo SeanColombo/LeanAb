@@ -14,8 +14,12 @@ include_once 'LeanAb.php';
 ?><html>
 	<head>
 		<style>
+		body{ font-family: Tahoma, Arial, Helvetica, sans-serif; }
 		table{ border-collapse:collapse; }
-		td,th{ border:1px solid black; }
+		td,th{
+			border:1px solid black;
+			padding: 10px;
+		}
 		</style>
 	</head>
 	<body>
