@@ -177,7 +177,7 @@ class LeanAb {
 				// TODO: If they are not in a group yet, assign one & store it in cookies or session state (and translate it to their permanent state when they do register).
 
 			} else {
-				// Check if the currently logged-in user is part of this experiment already. If they are, return the name of the hypothesis she was exposed to before.
+				// Check if the currently logged-in user is part of this experiment already. If they are, return the name of the hypothesis they were exposed to before.
 				$tExperiments = self::TABLE_PREFIX . self::TABLE_EXPERIMENTS;
 				$tGroups = self::TABLE_PREFIX . self::TABLE_GROUPS;
 				$tAssignments = self::TABLE_PREFIX . self::TABLE_ASSIGNMENTS;
@@ -218,7 +218,33 @@ class LeanAb {
 		}
 		return $groupAssigned;
 	} // end setupExperiment()
-	
+
+	/**
+	 * Returns true if the current user is already assigned to a hypothesis-group for the named
+	 * experiment, false otherwise. This is exposed by belongs_to_experiment() procedural function.
+	 *
+	 * WARNING: Does not check the existence of experimentName (because asking about an experiment
+	 * that has not been automatically-created yet, is completely valid) in those cases, the function
+	 * will return false because the user is not yet assigned to an experiment which hasn't been created
+	 * yet.
+	 */
+	public function belongsToExperiment( $experimentName ){
+		$tExperiments = self::TABLE_PREFIX . self::TABLE_EXPERIMENTS;
+		$tGroups = self::TABLE_PREFIX . self::TABLE_GROUPS;
+		$tAssignments = self::TABLE_PREFIX . self::TABLE_ASSIGNMENTS;
+		$userId = $this->querySafe( $this->getUserId() );
+
+		// Check if the currently logged-in user is part of this experiment already.
+		$queryString = "SELECT COUNT(*) FROM $tExperiments,$tGroups,$tAssignments WHERE $tAssignments.user_id='$userId' AND $tAssignments.experiment_id=$tExperiments.id AND $tAssignments.group_id=$tGroups.id";
+		$queryString .= " AND $tExperiments.name='".$this->querySafe($experimentName)."'";
+
+		// NOTE: If there are any errors in the query (because the system is not installed, or the experiment doesn't exist yet) then
+		// the user is definitely not assigned to the experiment yet, so we'll return false.
+		$numAssigned = $this->simpleQuery( $queryString ); // 0 or 1 if query worked, empty string if query failed. Only 1 if user is actually assigned.
+
+		return (!empty($groupAssigned));
+	} // end belongsToExperiment()
+
 	/**
 	 * Creates an experiment with the given name, and the weightings provided in the groupsAndWeightings array.
 	 * Each group should be a sub-array in groupsAndWeightings where the first index is the name of the group
@@ -575,3 +601,15 @@ function setup_experiment( $experimentName, $groupsAndWeightings ){
 	$leanAb = new LeanAb();
 	return $leanAb->setupExperiment( $experimentName, $groupsAndWeightings );
 } // end setup_experiment()
+
+/**
+ * Returns true if the current user is already assigned to a hypothesis-group for the named
+ * experiment, false otherwise. This is often used to look at users to potentially disqualify them from
+ * participating in an experiment (ie: if user is not part of this experiment, but has already seen the
+ * Boss of Level 8 of a game, then they will not be a valid experiment subject, so we'll manually treat
+ * them with the Control).
+ */
+function belongs_to_experiment( $experimentName ){
+	$leanAb = new LeanAb();
+	return $leanAb->belongsToExperiment( $experimentName );
+} // end belongs_to_experiment()
