@@ -46,6 +46,21 @@ The framework was built to be used by [Burndown for Trello](https://www.burndown
             "endDate" => "2016-11-27 00:00:00"
      ));
 ```
+- If you want to customize the report for an experiment instead of using the default funnel-metrics, just pass in the third parameter which is a custom function for getting the metrics (it will be used INSTEAD of the LeanAb::getFunnelForUserIds method you have defined). This can often be done as a simple anonymous function since it is often only intended for a single report. Please note that this is an advanced-feature and is not recommended for most experiments, since sometimes having too much data can be harmful when your end-game should always be focused on the funnel-metrics anyway. Example usage:
+```php
+      LeanAb::printReport( "TestAddFriendButtonColor", $additionalParams=array(), function($userIds, $additionalParams){
+          // Return custom results (obviously this is just hardcoded, in reality you would compute the data from a database or something similar).
+          // This experiment had the specific goal of increasing friendship-links and was related to the color of the "Add a friend" button, so we
+          // have customized this report to include a metric for whether the user has added any friends.
+          return array(
+              "Registered" => "1000 (100%)",
+              "Downloaded" => "650 (65%)",
+              "Chatted" => "350 (35%)",
+              "Added Friends" => 300 (30%)", // this report was related to the "add a friend" button
+              "Purchased" => "100 (10%)"
+          );
+      });
+```
 
 # Technical Notes
 - The system will always assume that it is installed. Before it is installed, it will cause query errors, then it notices those errors and it will test whether it is installed & do the installation if needed.

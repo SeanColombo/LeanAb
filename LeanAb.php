@@ -42,6 +42,22 @@
  *             "startDate" => "2016-01-01 00:00:00",
  *             "endDate" => "2016-11-27 00:00:00"
  *      ));
+ * - If you want to customize the report for an experiment instead of using the default funnel-metrics, just pass
+ *   in the third parameter which is a custom function for getting the metrics (it will be used INSTEAD of the
+ *   LeanAb::getFunnelForUserIds method you have defined). This can often be done as a simple anonymous function
+ *   since it is often only intended for a single report. Example:
+ *      LeanAb::printReport( "TestAddFriendButtonColor", $additionalParams=array(), function($userIds, $additionalParams){
+ *          // Return custom results (obviously this is just hardcoded, in reality you would compute the data from a database or something similar).
+ *          // This experiment had the specific goal of increasing friendship-links and was related to the color of the "Add a friend" button, so we
+ *          // have customized this report to include a metric for whether the user has added any friends.
+ *          return array(
+ *              "Registered" => "1000 (100%)",
+ *              "Downloaded" => "650 (65%)",
+ *              "Chatted" => "350 (35%)",
+ *              "Added Friends" => 300 (30%)", // this report was related to the "add a friend" button
+ *              "Purchased" => "100 (10%)"
+ *          );
+ *      });
  *
  * TECHNICAL NOTES:
  * - The system will always assume that it is installed. Before it is installed, it will cause query errors,
@@ -501,7 +517,7 @@ class LeanAb {
 	 * See printReport() comments. This is just the non-static implementation of that
 	 * same method-signature.
 	 */
-	private function printReport_INTERNAL( $experimentName, $additionalParams=array() ){
+	private function printReport_INTERNAL( $experimentName, $additionalParams=array(), $custom_getFunnelForUserIds=null ){
 		$groupsAndWeightings = $this->getGroupsForExperiment( $experimentName );
 
 		// If no groups were found, check to make sure that the experiment-name was correct. This helps find typos for experiment names that
@@ -525,7 +541,12 @@ class LeanAb {
 				$queryString = "SELECT user_id FROM $tGroups,$tAssignments WHERE $tGroups.id=$tAssignments.group_id AND $tGroups.name='".$this->querySafe($groupName)."'";
 				$userIds = $this->columnQuery( $queryString );
 
-				$funnelData = $this->getFunnelForUserIds($userIds, $additionalParams);
+				if(!empty($custom_getFunnelForUserIds) && (is_callable($custom_getFunnelForUserIds))){
+					// Use custom function for getting metrics...
+					$funnelData = $custom_getFunnelForUserIds($userIds, $additionalParams);
+				} else {
+					$funnelData = $this->getFunnelForUserIds($userIds, $additionalParams);
+				}
 				$funnelDataByGroup[ $groupName ] = $funnelData;
 			}
 
@@ -565,10 +586,15 @@ class LeanAb {
 	 * additional parameters (additionalParams) are provided, they will be forwarded to the
 	 * LeanAb::getFunnelForUserIds() method, which allows each user of LeanAb to implement
 	 * custom-reporting (such as filtering by signup-date, by demographic data, etc.).
+	 *
+	 * @param custom_getFunnelForUserIds - if this is provided, it will be used as the function from which to get
+	 *        funnel-data for the group, instead of the standard LeanAb::getFunnelForUserIds(). This allows you to
+	 *        very easily write custom reporting for experiments that want to compare metrics other than just the
+	 *        standard funnel-data.
 	 */
-	public static function printReport( $experimentName, $additionalParams=array() ){
+	public static function printReport( $experimentName, $additionalParams=array(), $custom_getFunnelForUserIds=null ){
 		$leanAb = new LeanAb();
-		return $leanAb->printReport_INTERNAL( $experimentName, $additionalParams );
+		return $leanAb->printReport_INTERNAL( $experimentName, $additionalParams, $custom_getFunnelForUserIds );
 	} // end printReport()
 	
 	/**
