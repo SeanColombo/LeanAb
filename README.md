@@ -7,9 +7,9 @@ The framework was built to be used by [Burndown for Trello](https://www.burndown
 # Installation
 1. Copy the LeanAb.php file to a directory that your code can access (such as the ```/includes``` directory of your site).
 2. To get this system to work well with your own site, there are a few methods at the top of the file that you need to implement to integrate with your system. Docs are provided in comments above those functions on how to implement them:
-  1. LeanAb::getDbh()
-  2. LeanAb::getUserId()
-  3. LeanAb::getFunnelForUserIds()
+   1. LeanAb::getDbh()
+   2. LeanAb::getUserId()
+   3. LeanAb::getFunnelForUserIds()
 3. There is no step 3.
 
 # Usage
@@ -20,11 +20,11 @@ The framework was built to be used by [Burndown for Trello](https://www.burndown
     $hypothesis = setup_experiment("FancyNewDesign1.2",
                             array(array("control", 50),
                                   array("design1", 50)));
-	if( $hypothesis == "control" ) {
-		// do it the old way
-	} elseif( $hypothesis == "design1" ) {
-	   // do it the fancy new way
-	}
+    if( $hypothesis == "control" ) {
+        // do it the old way
+    } elseif( $hypothesis == "design1" ) {
+        // do it the fancy new way
+    }
 ```
 
 # Reports
